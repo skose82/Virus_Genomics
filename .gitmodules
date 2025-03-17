@@ -1,3 +1,6 @@
 [submodule "seqneut-pipeline"]
 	path = seqneut-pipeline
 	url = https://github.com/jbloomlab/seqneut-pipeline
+[submodule "dms-vep-pipeline-3"]
+	path = dms-vep-pipeline-3
+	url = https://github.com/dms-vep/dms-vep-pipeline-3.git

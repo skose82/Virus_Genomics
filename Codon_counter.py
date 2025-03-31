@@ -109,7 +109,7 @@ def compare_mutations(codon_table):
 
 mutations = compare_mutations(codon_table)
 
-# Output the mutations
+
 print("Mutations between codons of N (Asparagine) and T (Threonine):")
 for mutation in mutations:
     print(mutation)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Codon frequency data
+
 codon_frequencies_rsv_a_F_proteins = {
     'UUU': 18.7333333333333, 'UUC': 10.9333333333333, 'UUA': 41.1, 'UUG': 13.2666666666667,
     'CUU': 6.5, 'CUC': 11.8, 'CUA': 23.4333333333333, 'CUG': 6.66666666666667,
@@ -21,31 +21,26 @@ codon_frequencies_rsv_a_F_proteins = {
     'GGU': 14.1, 'GGC': 8, 'GGA': 14.5666666666667, 'GGG': 6.16666666666667
 }
 
-# Codon table for example N (Asparagine) and T (Threonine)
+
 codon_table = {
-    'N': ['AAU', 'AAC'],  # Asparagine has codons AAU and AAC
-    'T': ['ACU', 'ACC', 'ACA', 'ACG']  # Threonine has codons ACU, ACC, ACA, ACG
+    'N': ['AAU', 'AAC'],  
+    'T': ['ACU', 'ACC', 'ACA', 'ACG']  
 }
 
-# Function to check whether a mutation is a transition or transversion
 def classify_mutation(codon_from, codon_to):
-    """
-    Classify the mutation as a transition or transversion based on codon changes.
-    Counts the number of transitions and transversions between the codons.
-    Only counts mutations if the bases are different.
-    """
+
     purines = ['A', 'G']
     pyrimidines = ['C', 'U']
     
     transition_count = 0
     transversion_count = 0
     
-    # Compare base by base
+ 
     for base_from, base_to in zip(codon_from, codon_to):
         if base_from == base_to:
             continue  # No change, skip this base
         
-        # Check if it's a transition (purine ↔ purine or pyrimidine ↔ pyrimidine)
+  
         if (base_from in purines and base_to in purines) or (base_from in pyrimidines and base_to in pyrimidines):
             transition_count += 1
         else:
@@ -53,70 +48,65 @@ def classify_mutation(codon_from, codon_to):
     
     return transition_count, transversion_count
 
-# Function to calculate mutation size (number of nucleotide changes)
+
 def calculate_change_size(codon_from, codon_to):
-    """
-    Calculate the number of nucleotide changes between two codons.
-    """
+
     changes = sum(1 for base_from, base_to in zip(codon_from, codon_to) if base_from != base_to)
     return changes
 
-# Function to calculate the score for a given mutation
+
 def calculate_score(transition_count, transversion_count, change_size, codon_to):
-    """
-    Calculate a mutation score based on mutation type, change size, and codon usage.
-    The codon usage is now based on the codon_to frequency.
-    """
-    # Mutation type probability (transition or transversion)
+
+   
     if transition_count > 0:
-        mutation_type_prob = 0.8  # Higher probability for transitions
+        mutation_type_prob = 0.8  
     else:
-        mutation_type_prob = 0.2  # Lower probability for transversions
+        mutation_type_prob = 0.2  
     
-    # Change size probability
+   
     if change_size == 1:
-        change_size_prob = 0.6  # Higher probability for single nucleotide changes
+        change_size_prob = 0.6  
     elif change_size == 2:
-        change_size_prob = 0.3  # Medium probability for double nucleotide changes
+        change_size_prob = 0.3  
     else:
-        change_size_prob = 0.1  # Lower probability for triple nucleotide changes
+        change_size_prob = 0.1 
     
-    # Codon usage frequency (use the frequency from the provided codon data for codon_to only)
-    codon_usage_prob_to = codon_frequencies_rsv_a_F_proteins.get(codon_to, 0.5)  # Default to 0.5 if not found
+ 
+    codon_usage_prob_to = codon_frequencies_rsv_a_F_proteins.get(codon_to, 0.5)  
     
-    # Calculate the final score
+
     final_score = mutation_type_prob * change_size_prob * codon_usage_prob_to
     return final_score
 
-# Function to compare mutations between amino acids and classify them
+
 def compare_mutations(codon_table):
   
     mutations = []
     
-    # Get the codons for Asparagine (N) and Threonine (T)
+
     codons_from = codon_table['N']
     codons_to = codon_table['T']
     
-    # Compare each codon from N with each codon from T
+
     for codon_from in codons_from:
         for codon_to in codons_to:
-            # Classify the mutation and count transitions and transversions
+    
             transition_count, transversion_count = classify_mutation(codon_from, codon_to)
             
-            # Calculate the change size (number of nucleotide changes)
+       
             change_size = calculate_change_size(codon_from, codon_to)
             
-            # Calculate the score for the mutation
+     
             score = calculate_score(transition_count, transversion_count, change_size, codon_to)
             
-            # Only include mutations if there's at least one transition or transversion
+       
             if transition_count > 0 or transversion_count > 0:
-                # Store the mutation description with correct counts and the score
+           
                 mutations.append(f'{codon_from} -> {codon_to} | Transitions: {transition_count}, Transversions: {transversion_count}, Score: {score:.4f}')
     
     return mutations
 
-# Compare mutations between N (Asparagine) and T (Threonine)
+
 mutations = compare_mutations(codon_table)
 
 # Output the mutations
